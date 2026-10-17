@@ -33,7 +33,7 @@
     <!-- Station Identifier Input -->
     <div>
       <label for="stationInput" class="block text-xs uppercase font-mono text-zinc-300 font-semibold mb-1">
-        Tür / Name des Zählers
+        Tür / Station Name
       </label>
       <input
         id="stationInput"
@@ -41,15 +41,39 @@
         placeholder="z.B. Tür 1 (Haupteingang) oder Alex"
         class="w-full bg-black/60 border border-zinc-700/80 text-white px-3 py-2 rounded-xl text-sm focus:border-brand-orange focus:ring-1 focus:ring-brand-orange outline-none transition font-sans"
       />
+    </div>
+
+    <!-- Device / Sender ID Input ("Woher gesendet") -->
+    <div>
+      <div class="flex items-center justify-between mb-1">
+        <label for="deviceIdInput" class="block text-xs uppercase font-mono text-zinc-300 font-semibold">
+          Geräte- / Absender-ID ("Woher gesendet")
+        </label>
+        <button
+          id="regenerateDeviceIdBtn"
+          type="button"
+          class="text-[10px] font-mono text-brand-amber hover:text-white transition underline cursor-pointer"
+        >
+          Neu generieren
+        </button>
+      </div>
+      <div class="flex items-center gap-2">
+        <input
+          id="deviceIdInput"
+          type="text"
+          placeholder="z.B. DEV-4A8F"
+          class="w-full bg-black/60 border border-zinc-700/80 text-brand-orange font-mono font-bold px-3 py-2 rounded-xl text-sm focus:border-brand-orange focus:ring-1 focus:ring-brand-orange outline-none transition uppercase"
+        />
+      </div>
       <p class="text-[10px] sm:text-[11px] text-zinc-500 mt-1 leading-snug">
-        Wird im E-Mail-Betreff und Bericht vermerkt, wenn mehrere Mitarbeiter zählen.
+        Kennzeichnet das Gerät eindeutig im Betreff und im geteilten Bericht.
       </p>
     </div>
 
-    <!-- Recipient Email Input -->
+    <!-- Recipient Email / mailto: Input -->
     <div>
       <label for="recipientEmailInput" class="block text-xs uppercase font-mono text-zinc-300 font-semibold mb-1">
-        Standard Empfänger E-Mail
+        Empfänger E-Mail (<span class="text-brand-amber font-mono">mailto:</span>)
       </label>
       <input
         id="recipientEmailInput"
@@ -57,6 +81,9 @@
         placeholder="z.B. orga@sonnenraum.berlin"
         class="w-full bg-black/60 border border-zinc-700/80 text-white px-3 py-2 rounded-xl text-sm focus:border-brand-orange focus:ring-1 focus:ring-brand-orange outline-none transition font-sans"
       />
+      <p class="text-[10px] sm:text-[11px] text-zinc-500 mt-1 leading-snug">
+        Wird direkt in den <code class="text-zinc-400">mailto:</code>-Link eingefügt und kann hier jederzeit geändert werden.
+      </p>
     </div>
 
     <!-- Target Goal Input -->
