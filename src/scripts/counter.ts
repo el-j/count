@@ -134,6 +134,32 @@ export function setupCounterApp(): void {
     }
   }
 
+  async function flushSyncQueue(): Promise<void> {
+    const queue = JSON.parse(localStorage.getItem('sonnenraum_party_counter_sync_queue_v1') ?? '[]');
+    if (!Array.isArray(queue) || queue.length === 0) {
+      return;
+    }
+
+    try {
+      const apiUrl = new URL('api/sync', window.location.href);
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ queue })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Sync failed with ${response.status}`);
+      }
+
+      localStorage.removeItem('sonnenraum_party_counter_sync_queue_v1');
+      setActionMessage('Datenbank-Synchronisierung erfolgreich');
+    } catch (err) {
+      console.warn('Database sync delayed; queue kept locally:', err);
+      setActionMessage('Offline: lokale Sicherung aktiv');
+    }
+  }
+
   // DOM elements
   const counterVal = document.getElementById('counterVal');
   const progressBar = document.getElementById('progressBar');
@@ -628,6 +654,11 @@ Offline-First mit LocalStorage.`;
 
   laterInstallBtn?.addEventListener('click', dismissInstall);
   dismissInstallBtn?.addEventListener('click', dismissInstall);
+
+  void flushSyncQueue();
+  window.addEventListener('online', () => {
+    void flushSyncQueue();
+  });
 
   // Initial render
   renderUI();
