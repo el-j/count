@@ -65,12 +65,22 @@ function triggerHaptic(type: 'light' | 'heavy' | 'success' = 'light'): void {
   }
 }
 
+function generateRandomDeviceId(): string {
+  const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+  let result = 'DEV-';
+  for (let i = 0; i < 4; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
 const STORAGE_KEY = 'sonnenraum_party_counter_v1';
 
 const defaultState: CounterState = {
   count: 0,
   target: 300,
   stationName: 'Tür 1',
+  deviceId: 'DEV-1001',
   recipientEmail: '',
   history: [],
   startTime: new Date().toISOString()
@@ -84,12 +94,16 @@ export function setupCounterApp(): void {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
+        if (!parsed.deviceId) {
+          parsed.deviceId = generateRandomDeviceId();
+        }
         return { ...defaultState, ...parsed };
       }
     } catch (err) {
       console.error('Error loading stored counter state:', err);
     }
-    return { ...defaultState };
+    const fresh = { ...defaultState, deviceId: generateRandomDeviceId() };
+    return fresh;
   }
 
   let state: CounterState = loadState();
@@ -118,6 +132,8 @@ export function setupCounterApp(): void {
 
   // Settings inputs
   const stationInput = document.getElementById('stationInput') as HTMLInputElement | null;
+  const deviceIdInput = document.getElementById('deviceIdInput') as HTMLInputElement | null;
+  const regenerateDeviceIdBtn = document.getElementById('regenerateDeviceIdBtn');
   const recipientEmailInput = document.getElementById('recipientEmailInput') as HTMLInputElement | null;
   const targetInput = document.getElementById('targetInput') as HTMLInputElement | null;
   const resetBtn = document.getElementById('resetCounterBtn');
@@ -134,6 +150,7 @@ export function setupCounterApp(): void {
   const optionsBtn = document.getElementById('optionsBtn');
   const closeSettingsBtn = document.getElementById('closeSettingsBtn');
   const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+  const shareReportBtn = document.getElementById('shareReportBtn');
   const sendMailBtn = document.getElementById('sendMailBtn');
   const customGroupInput = document.getElementById('customGroupInput') as HTMLInputElement | null;
   const addCustomGroupBtn = document.getElementById('addCustomGroupBtn');
@@ -190,12 +207,12 @@ export function setupCounterApp(): void {
     if (targetStatusText) {
       if (remaining > 0) {
         targetStatusText.textContent = `Noch ${remaining} bis Ziel`;
-        targetStatusText.className = 'text-brand-amber font-bold';
+        targetStatusText.className = 'text-brand-amber font-bold tracking-tight text-[11px] sm:text-xs';
         counterVal?.classList.remove('goal-achieved');
       } else {
         const surplus = state.count - target;
         targetStatusText.textContent = surplus === 0 ? `🎯 Ziel erreicht (${target})!` : `🎉 Ziel übertroffen (+${surplus})`;
-        targetStatusText.className = 'text-emerald-400 font-bold';
+        targetStatusText.className = 'text-emerald-400 font-bold tracking-tight text-[11px] sm:text-xs';
         counterVal?.classList.add('goal-achieved');
       }
     }
@@ -275,17 +292,17 @@ export function setupCounterApp(): void {
 
     state.history.forEach((item) => {
       const row = document.createElement('div');
-      row.className = 'flex justify-between items-center bg-black/50 border border-zinc-800/80 px-3.5 py-2.5 rounded-xl transition hover:border-zinc-700';
+      row.className = 'flex justify-between items-center bg-black/50 border border-zinc-800/80 px-3.5 py-2 rounded-xl transition hover:border-zinc-700';
       const isPos = item.delta > 0;
       row.innerHTML = `
         <div class="flex items-center gap-2.5">
           <span class="${isPos ? 'text-emerald-400 bg-emerald-950/60 border border-emerald-800/50' : 'text-red-400 bg-red-950/60 border border-red-800/50'} text-xs font-mono font-bold px-2 py-0.5 rounded-md">
             ${isPos ? '+' + item.delta : item.delta}
           </span>
-          <span class="text-zinc-200 font-sans text-sm">${item.label}</span>
+          <span class="text-zinc-200 font-sans text-xs sm:text-sm">${item.label}</span>
         </div>
         <div class="text-right">
-          <div class="text-white font-mono font-bold text-sm tabular-nums">${item.resultingTotal}</div>
+          <div class="text-white font-mono font-bold text-xs sm:text-sm tabular-nums">${item.resultingTotal}</div>
           <div class="text-[10px] text-zinc-500 font-mono">${item.time}</div>
         </div>
       `;
@@ -304,6 +321,7 @@ export function setupCounterApp(): void {
 
   function openSettings(): void {
     if (stationInput) stationInput.value = state.stationName || 'Tür 1';
+    if (deviceIdInput) deviceIdInput.value = state.deviceId || generateRandomDeviceId();
     if (recipientEmailInput) recipientEmailInput.value = state.recipientEmail || '';
     if (targetInput) targetInput.value = (state.target || 300).toString();
     settingsModal?.classList.remove('hidden');
@@ -328,16 +346,16 @@ export function setupCounterApp(): void {
     customGroupInput.blur();
   }
 
-  function sendMailReport(): void {
+  function buildReportData(): { subject: string; bodyText: string } {
     const dateStr = new Date().toLocaleDateString('de-DE');
     const timeStr = new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
     const target = state.target || 300;
     const targetMet = state.count >= target ? 'JA' : 'NEIN';
     const pct = Math.round((state.count / target) * 100);
+    const station = state.stationName || 'Tür 1';
+    const senderId = state.deviceId || 'DEV-1001';
 
-    const subject = encodeURIComponent(
-      `Einlassbericht [${state.stationName || 'Tür 1'}]: ${state.count} Gäste — The Point Of No Return (${dateStr})`
-    );
+    const subject = `[${station} | ID: ${senderId}] Einlassbericht: ${state.count} Gäste — The Point Of No Return (${dateStr})`;
 
     // Hourly aggregation
     const hourlySummary: Record<string, number> = {};
@@ -367,14 +385,15 @@ export function setupCounterApp(): void {
 `==============================================
 EINLASS-BERICHT: THE POINT OF NO RETURN
 Location: Sonnenraum, Eichenstraße 4A, 12435 Berlin
-Datum/Uhrzeit: ${dateStr} um ${timeStr}
-Station / Zähler: ${state.stationName || 'Unbenannt'}
+Datum / Uhrzeit: ${dateStr} um ${timeStr}
+Station / Woher gesendet: ${station}
+Geräte- / Absender-ID: ${senderId}
 ==============================================
 
 GESAMTZAHL GÄSTE: ${state.count}
 Mindestziel (${target}): ${targetMet} (${pct}% erreicht)
 Eintrittspreis: 10 € at the door
-Theoretischer Kassenstand (Einlass): ~${state.count * 10} €
+Theoretischer Kassenstand: ~${state.count * 10} €
 
 STÜNDLICHE ÜBERSICHT:
 ${breakdownText}
@@ -383,13 +402,45 @@ Zuletzt erfasste Einträge:
 ${recentText}
 
 Generiert mit der Sonnenraum Einlass App.
+Woher gesendet: ${station} [${senderId}]
 Offline-First mit LocalStorage.`;
 
-    const body = encodeURIComponent(bodyText);
+    return { subject, bodyText };
+  }
+
+  function openMailto(): void {
+    const { subject, bodyText } = buildReportData();
+    const encodedSubject = encodeURIComponent(subject);
+    const encodedBody = encodeURIComponent(bodyText);
     const recipient = encodeURIComponent(state.recipientEmail || '');
 
-    window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
-    showToast('E-Mail-Entwurf wird geöffnet...');
+    window.location.href = `mailto:${recipient}?subject=${encodedSubject}&body=${encodedBody}`;
+    showToast('E-Mail (mailto:) wird geöffnet...');
+  }
+
+  async function shareReport(): Promise<void> {
+    const { subject, bodyText } = buildReportData();
+
+    // Check for native iOS / Android share menu capability
+    if (typeof navigator !== 'undefined' && 'share' in navigator) {
+      try {
+        await navigator.share({
+          title: subject,
+          text: bodyText
+        });
+        showToast('Bericht geteilt');
+        return;
+      } catch (err: unknown) {
+        if (err && typeof err === 'object' && 'name' in err && err.name === 'AbortError') {
+          // User cancelled native share sheet, do nothing
+          return;
+        }
+        console.warn('Native share error, falling back to mailto:', err);
+      }
+    }
+
+    // Fallback if Web Share is not supported or encountered non-abort error
+    openMailto();
   }
 
   // Event Listeners
@@ -411,8 +462,17 @@ Offline-First mit LocalStorage.`;
   optionsBtn?.addEventListener('click', openSettings);
   closeSettingsBtn?.addEventListener('click', closeSettings);
 
+  regenerateDeviceIdBtn?.addEventListener('click', () => {
+    if (deviceIdInput) {
+      const newId = generateRandomDeviceId();
+      deviceIdInput.value = newId;
+      showToast(`Neue ID: ${newId}`);
+    }
+  });
+
   saveSettingsBtn?.addEventListener('click', () => {
     state.stationName = stationInput?.value.trim() || 'Tür 1';
+    state.deviceId = deviceIdInput?.value.trim().toUpperCase() || generateRandomDeviceId();
     state.recipientEmail = recipientEmailInput?.value.trim() || '';
     state.target = parseInt(targetInput?.value || '300', 10) || 300;
     saveState();
@@ -443,7 +503,8 @@ Offline-First mit LocalStorage.`;
     }
   });
 
-  sendMailBtn?.addEventListener('click', sendMailReport);
+  shareReportBtn?.addEventListener('click', shareReport);
+  sendMailBtn?.addEventListener('click', openMailto);
 
   // Close modals on escape key or clicking backdrop
   window.addEventListener('keydown', (e) => {
