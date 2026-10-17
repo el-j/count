@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-orange: #ff4d15;
+  --color-brand-darkorange: #c93400;
+  --color-brand-amber: #ffb347;
+  --color-brand-redglow: #ff1e00;
+  --color-brand-cream: #f4ede2;
+  --color-brand-dark: #0d0a0b;
+  --color-brand-surface: #171214;
+  --color-brand-surfaceBorder: #2e2327;
+
+  --font-display: 'Oswald', 'Impact', 'Arial Black', sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
+}
+
+/* Base body styling matching Sonnenraum club poster aesthetic */
+html {
+  color-scheme: dark;
+}
+
+body {
+  background-color: #0b090a;
+  background-image: 
+    radial-gradient(circle at 15% 10%, rgba(255, 77, 21, 0.28) 0%, transparent 45%),
+    radial-gradient(circle at 85% 30%, rgba(42, 68, 104, 0.35) 0%, transparent 50%),
+    radial-gradient(circle at 50% 90%, rgba(220, 40, 0, 0.22) 0%, transparent 60%);
+  background-attachment: fixed;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.poster-glow {
+  text-shadow: 0 0 25px rgba(255, 77, 21, 0.45);
+}
+
+.counter-display {
+  text-shadow: 0 0 35px rgba(255, 77, 21, 0.5), 0 4px 14px rgba(0, 0, 0, 0.85);
+}
+
+/* Pulsing animation for goal achieved */
+@keyframes goalPulse {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 12px rgba(255, 77, 21, 0.7));
+  }
+  50% {
+    transform: scale(1.025);
+    filter: drop-shadow(0 0 28px rgba(255, 179, 71, 0.95));
+  }
+}
+
+.goal-achieved {
+  animation: goalPulse 2.4s infinite ease-in-out;
+}
+
+/* Button active tactile push feedback */
+.tap-btn {
+  transition: transform 0.08s ease, filter 0.15s ease, background-color 0.15s ease;
+}
+
+.tap-btn:active {
+  transform: scale(0.95);
+  filter: brightness(1.15);
+}
+
+/* Custom modern scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(13, 10, 11, 0.5);
+}
+::-webkit-scrollbar-thumb {
+  background: #3a2b30;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #ff4d15;
+}

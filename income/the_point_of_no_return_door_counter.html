@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="de" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0a090a">
+  <title>The Point Of No Return — Sonnenraum Counter</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              orange: '#ff4d15',
+              darkorange: '#c93400',
+              amber: '#ffb347',
+              redglow: '#ff1e00',
+              cream: '#f4ede2',
+              dark: '#0d0a0b',
+              surface: '#171214',
+              surfaceBorder: '#2e2327'
+            }
+          },
+          fontFamily: {
+            display: ['Impact', 'Oswald', 'Arial Black', 'sans-serif'],
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Poster Lighting Aesthetic: Red spotlight and dark club atmosphere */
+    body {
+      background-color: #0b090a;
+      background-image: 
+        radial-gradient(circle at 15% 10%, rgba(255, 77, 21, 0.28) 0%, transparent 45%),
+        radial-gradient(circle at 85% 30%, rgba(42, 68, 104, 0.35) 0%, transparent 50%),
+        radial-gradient(circle at 50% 90%, rgba(220, 40, 0, 0.2) 0%, transparent 60%);
+      background-attachment: fixed;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .poster-glow {
+      text-shadow: 0 0 25px rgba(255, 77, 21, 0.45);
+    }
+
+    .counter-display {
+      text-shadow: 0 0 35px rgba(255, 77, 21, 0.5), 0 4px 12px rgba(0, 0, 0, 0.8);
+    }
+
+    /* Subtle pulse animation for goal reached */
+    @keyframes goalPulse {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(255, 77, 21, 0.6)); }
+      50% { transform: scale(1.02); filter: drop-shadow(0 0 25px rgba(255, 179, 71, 0.9)); }
+    }
+    .goal-achieved {
+      animation: goalPulse 2.5s infinite ease-in-out;
+    }
+
+    /* Button active tactile push */
+    .tap-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* Custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #3a2b30;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="text-brand-cream min-h-screen flex flex-col justify-between selection:bg-brand-orange selection:text-white antialiased font-sans pb-6">
+
+  <header class="w-full max-w-md mx-auto pt-5 px-4">
+    <div class="border-b border-brand-surfaceBorder/80 pb-3 flex items-start justify-between">
+      <div>
+        <p class="text-xs uppercase tracking-widest text-brand-amber font-semibold">17.10. • 21:00 – 07:00</p>
+        <h1 class="text-2xl xs:text-3xl font-display uppercase tracking-tight text-brand-cream poster-glow leading-none mt-0.5">
+          The Point Of <span class="text-brand-orange">No Return</span>
+        </h1>
+        <p class="text-[11px] font-medium tracking-wide text-zinc-400 mt-1">
+          SONNENRAUM • Eichenstraße 4A, Berlin
+        </p>
+      </div>
+
+      <!-- Quick Door Selector / Station Tag -->
+      <button id="stationBadgeBtn" class="bg-brand-surface border border-brand-surfaceBorder hover:border-brand-orange/60 text-zinc-300 text-xs py-1 px-2.5 rounded-lg flex items-center gap-1.5 transition">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span id="stationNameDisplay" class="font-mono text-[11px] truncate max-w-[90px]">Tür 1</span>
+        <svg class="w-3 h-3 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="w-full max-w-md mx-auto px-4 flex-1 flex flex-col justify-center my-3">
+    
+    <!-- Target Progress Header -->
+    <div class="bg-brand-surface/90 border border-brand-surfaceBorder rounded-2xl p-4 shadow-2xl backdrop-blur-md mb-4 relative overflow-hidden">
+      <div class="flex justify-between items-center text-xs font-mono mb-2">
+        <span class="text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5 text-brand-orange" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"></path></svg>
+          Mindestziel: <strong class="text-white">300</strong>
+        </span>
+        <span id="targetStatusText" class="text-brand-amber font-bold">Noch 300</span>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="w-full bg-black/60 rounded-full h-3 p-0.5 border border-zinc-800 relative">
+        <div id="progressBar" class="bg-gradient-to-r from-brand-orange via-brand-amber to-emerald-400 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+      </div>
+
+      <!-- Live Count Display -->
+      <div class="text-center py-5">
+        <div id="counterVal" class="text-7xl sm:text-8xl font-display font-extrabold tracking-tight text-white counter-display tabular-nums">
+          0
+        </div>
+        <p class="text-xs uppercase tracking-widest text-zinc-400 font-semibold mt-1">
+          Gäste Eingelassen (Door Count)
+        </p>
+      </div>
+
+      <!-- Quick Action Feedback Indicator -->
+      <div id="lastActionToast" class="text-[11px] font-mono text-center text-zinc-500 h-4 transition-opacity duration-300">
+        Bereit zum Zählen
+      </div>
+    </div>
+
+    <div class="grid grid-cols-3 gap-2.5 mb-3">
+      <!-- +1 Primary Button (Spans 2 columns) -->
+      <button id="addOneBtn" class="tap-btn col-span-2 bg-gradient-to-br from-brand-orange to-brand-darkorange active:from-brand-darkorange border border-orange-500/50 text-white rounded-2xl py-5 px-4 shadow-lg shadow-brand-orange/20 flex flex-col items-center justify-center transition">
+        <span class="text-3xl font-display tracking-wide font-black leading-none">+ 1</span>
+        <span class="text-[11px] uppercase tracking-wider font-semibold text-orange-200 mt-1">Gast</span>
+      </button>
+
+      <!-- +10 Big Group Button -->
+      <button id="addTenBtn" class="tap-btn bg-brand-surface border border-brand-surfaceBorder hover:border-brand-amber/60 text-brand-amber active:bg-brand-amber active:text-black rounded-2xl py-5 px-3 flex flex-col items-center justify-center transition shadow-md">
+        <span class="text-3xl font-display tracking-wide font-black leading-none">+ 10</span>
+        <span class="text-[11px] uppercase tracking-wider font-semibold text-zinc-400 mt-1">Gruppe</span>
+      </button>
+    </div>
+
+    <!-- Custom Group Input & Minus Buttons Row -->
+    <div class="grid grid-cols-3 gap-2.5 mb-3">
+      <!-- Custom Number Input + Add Group -->
+      <div class="col-span-2 bg-brand-surface border border-brand-surfaceBorder rounded-2xl p-1.5 flex items-center shadow-inner">
+        <input 
+          id="customGroupInput" 
+          type="number" 
+          min="1" 
+          max="100" 
+          placeholder="Gruppe (+N)" 
+          class="w-full bg-transparent text-white font-mono text-lg px-3 py-2 outline-none placeholder:text-zinc-600 focus:placeholder:text-transparent"
+        >
+        <button id="addCustomGroupBtn" class="tap-btn bg-zinc-800 hover:bg-brand-orange text-white text-xs font-bold uppercase tracking-wider py-2.5 px-3.5 rounded-xl transition whitespace-nowrap">
+          + Hinzu
+        </button>
+      </div>
+
+      <!-- Minus 1 (Correction) Button -->
+      <button id="subOneBtn" class="tap-btn bg-zinc-900/90 border border-zinc-800 hover:border-red-500/50 text-zinc-400 hover:text-red-400 active:bg-red-950 active:text-white rounded-2xl py-3 px-2 flex flex-col items-center justify-center transition">
+        <span class="text-xl font-display font-bold leading-none">- 1</span>
+        <span class="text-[10px] uppercase font-mono tracking-wider mt-0.5">Korrektur</span>
+      </button>
+    </div>
+
+    <!-- Undo and Reset Utilities -->
+    <div class="flex items-center justify-between text-xs font-mono text-zinc-400 px-1">
+      <button id="undoBtn" class="hover:text-white transition flex items-center gap-1 py-1">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path></svg>
+        <span>Letzten Schritt rückgängig</span>
+      </button>
+      <button id="viewLogBtn" class="text-zinc-500 hover:text-brand-amber transition flex items-center gap-1 py-1">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <span id="logCountLabel">Verlauf (0)</span>
+      </button>
+    </div>
+  </main>
+
+  <footer class="w-full max-w-md mx-auto px-4 mt-auto">
+    <div class="bg-brand-surface/70 border border-brand-surfaceBorder rounded-2xl p-3 flex gap-2">
+      <!-- Send Mail Button (Primary Export) -->
+      <button id="sendMailBtn" class="tap-btn flex-1 bg-white hover:bg-brand-cream active:bg-zinc-200 text-black font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-lg transition">
+        <svg class="w-4 h-4 text-brand-darkorange" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg>
+        <span class="text-xs uppercase tracking-wider font-display">Zahlen per E-Mail senden</span>
+      </button>
+
+      <!-- Settings / Options Button -->
+      <button id="optionsBtn" aria-label="Optionen" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 p-3 rounded-xl flex items-center justify-center transition">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+      </button>
+    </div>
+
+    <!-- Offline & Safety Notice -->
+    <div class="flex items-center justify-between text-[10px] text-zinc-500 font-mono mt-2 px-1">
+      <span class="flex items-center gap-1">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+        Offline & LocalStorage aktiv
+      </span>
+      <span>10 € AT THE DOOR</span>
+    </div>
+  </footer>
+
+  <!-- Log Modal -->
+  <div id="logModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+    <div class="bg-brand-surface border border-brand-surfaceBorder w-full max-w-md rounded-t-3xl sm:rounded-2xl max-h-[80vh] flex flex-col p-5 shadow-2xl">
+      <div class="flex justify-between items-center pb-3 border-b border-zinc-800">
+        <h2 class="font-display uppercase text-lg text-white">Einlass-Verlauf</h2>
+        <button id="closeLogBtn" class="text-zinc-400 hover:text-white text-xl leading-none">&times;</button>
+      </div>
+      <div id="logListContainer" class="overflow-y-auto flex-1 my-3 space-y-2 text-xs font-mono">
+        <!-- Rendered dynamically -->
+      </div>
+      <button id="closeLogModalBottomBtn" class="w-full bg-zinc-800 text-white font-semibold py-2.5 rounded-xl text-xs uppercase tracking-wider">
+        Schließen
+      </button>
+    </div>
+  </div>
+
+  <!-- Settings & Station Modal -->
+  <div id="settingsModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+    <div class="bg-brand-surface border border-brand-surfaceBorder w-full max-w-md rounded-t-3xl sm:rounded-2xl flex flex-col p-5 shadow-2xl space-y-4">
+      <div class="flex justify-between items-center pb-2 border-b border-zinc-800">
+        <h2 class="font-display uppercase text-lg text-white">Station & Einstellungen</h2>
+        <button id="closeSettingsBtn" class="text-zinc-400 hover:text-white text-xl leading-none">&times;</button>
+      </div>
+
+      <div>
+        <label for="stationInput" class="block text-xs uppercase font-mono text-zinc-400 mb-1">Tür / Name des Zählers</label>
+        <input id="stationInput" type="text" placeholder="z.B. Tür 1 (Haupteingang) oder Alex" class="w-full bg-black/50 border border-zinc-700 text-white px-3 py-2 rounded-xl text-sm focus:border-brand-orange outline-none">
+        <p class="text-[11px] text-zinc-500 mt-1">Wird im E-Mail-Betreff und Bericht vermerkt, wenn mehrere Leute zählen.</p>
+      </div>
+
+      <div>
+        <label for="recipientEmailInput" class="block text-xs uppercase font-mono text-zinc-400 mb-1">Standard Empfänger E-Mail</label>
+        <input id="recipientEmailInput" type="email" placeholder="orga@party.de" class="w-full bg-black/50 border border-zinc-700 text-white px-3 py-2 rounded-xl text-sm focus:border-brand-orange outline-none">
+      </div>
+
+      <div>
+        <label for="targetInput" class="block text-xs uppercase font-mono text-zinc-400 mb-1">Mindestziel (Default: 300)</label>
+        <input id="targetInput" type="number" min="10" step="10" value="300" class="w-full bg-black/50 border border-zinc-700 text-white px-3 py-2 rounded-xl text-sm focus:border-brand-orange outline-none">
+      </div>
+
+      <div class="pt-2 border-t border-zinc-800 flex flex-col gap-2">
+        <button id="saveSettingsBtn" class="w-full bg-brand-orange hover:bg-brand-darkorange text-white font-bold py-2.5 rounded-xl text-xs uppercase tracking-wider transition">
+          Speichern
+        </button>
+        <button id="resetCounterBtn" class="w-full bg-red-950/60 hover:bg-red-900 border border-red-800/60 text-red-300 font-semibold py-2 rounded-xl text-xs uppercase tracking-wider transition">
+          Zähler auf 0 Zurücksetzen
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Message Box (In place of alert) -->
+  <div id="toastMessage" class="fixed bottom-20 left-1/2 -translate-x-1/2 bg-zinc-900/95 border border-brand-orange text-white text-xs px-4 py-2.5 rounded-full shadow-2xl pointer-events-none opacity-0 transition-opacity duration-300 z-50 whitespace-nowrap">
+    Meldung
+  </div>
+
+  <script>
+    /* Safe Offline Web Audio Synthesizer (No external MP3 files needed) */
+    class AudioFeedback {
+      constructor() {
+        this.ctx = null;
+      }
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) {
+            this.ctx = new AudioContext();
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+      playPop(freq = 440, duration = 0.05) {
+        try {
+          this.init();
+          if (!this.ctx) return;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(freq * 0.5, this.ctx.currentTime + duration);
+          gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch (e) {
+          // Silent fallback if audio context is blocked
+        }
+      }
+      playCelebration() {
+        try {
+          this.init();
+          if (!this.ctx) return;
+          [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+            setTimeout(() => this.playPop(freq, 0.15), i * 90);
+          });
+        } catch (e) {}
+      }
+    }
+
+    const sound = new AudioFeedback();
+
+    function triggerHaptic(type = 'light') {
+      if ('vibrate' in navigator) {
+        if (type === 'heavy') navigator.vibrate([30, 40, 30]);
+        else if (type === 'success') navigator.vibrate([20, 30, 50, 30, 80]);
+        else navigator.vibrate(15);
+      }
+    }
+
+    const STORAGE_KEY = 'sonnenraum_party_counter_v1';
+
+    const defaultState = {
+      count: 0,
+      target: 300,
+      stationName: 'Tür 1',
+      recipientEmail: '',
+      history: [],
+      startTime: new Date().toISOString()
+    };
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          return { ...defaultState, ...parsed };
+        }
+      } catch (err) {
+        console.error('Error loading stored state:', err);
+      }
+      return { ...defaultState };
+    }
+
+    let state = loadState();
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (err) {
+        console.error('Failed to save to localStorage:', err);
+      }
+    }
+
+    const counterVal = document.getElementById('counterVal');
+    const progressBar = document.getElementById('progressBar');
+    const targetStatusText = document.getElementById('targetStatusText');
+    const stationNameDisplay = document.getElementById('stationNameDisplay');
+    const lastActionToast = document.getElementById('lastActionToast');
+    const logCountLabel = document.getElementById('logCountLabel');
+
+    function renderUI() {
+      // Counter Number
+      counterVal.textContent = state.count;
+
+      // Station badge
+      stationNameDisplay.textContent = state.stationName || 'Tür 1';
+
+      // Log count
+      logCountLabel.textContent = `Verlauf (${state.history.length})`;
+
+      // Calculate Target & Progress
+      const target = state.target || 300;
+      const pct = Math.min(Math.round((state.count / target) * 100), 100);
+      progressBar.style.width = `${pct}%`;
+
+      const remaining = target - state.count;
+      if (remaining > 0) {
+        targetStatusText.textContent = `Noch ${remaining} bis Ziel`;
+        targetStatusText.className = "text-brand-amber font-bold";
+        counterVal.classList.remove('goal-achieved');
+      } else {
+        const surplus = state.count - target;
+        targetStatusText.textContent = surplus === 0 ? "🎯 Ziel erreicht (300)!" : `🎉 Ziel übertroffen (+${surplus})`;
+        targetStatusText.className = "text-emerald-400 font-bold";
+        counterVal.classList.add('goal-achieved');
+      }
+    }
+
+    function showToast(text) {
+      const toast = document.getElementById('toastMessage');
+      toast.textContent = text;
+      toast.style.opacity = '1';
+      setTimeout(() => {
+        toast.style.opacity = '0';
+      }, 2200);
+    }
+
+    function setActionMessage(msg) {
+      lastActionToast.textContent = msg;
+    }
+
+    function applyDelta(delta, label = '') {
+      if (state.count + delta < 0) {
+        showToast('Zähler kann nicht unter 0 fallen');
+        triggerHaptic('heavy');
+        return;
+      }
+
+      sound.init();
+      const previous = state.count;
+      state.count += delta;
+
+      const actionItem = {
+        id: 'entry_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+        time: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+        iso: new Date().toISOString(),
+        delta: delta,
+        resultingTotal: state.count,
+        label: label || (delta > 0 ? `+${delta}` : `${delta}`)
+      };
+
+      state.history.unshift(actionItem);
+      // Keep reasonable local log size
+      if (state.history.length > 500) state.history.pop();
+
+      saveState();
+      renderUI();
+
+      // Feedback
+      if (delta > 0) {
+        sound.playPop(delta === 10 ? 560 : 440);
+        triggerHaptic('light');
+        setActionMessage(`${actionItem.label} hinzugefügt (${actionItem.time})`);
+      } else {
+        sound.playPop(280);
+        triggerHaptic('heavy');
+        setActionMessage(`Korrektur: ${actionItem.label} (${actionItem.time})`);
+      }
+
+      // Check if threshold crossed
+      if (previous < state.target && state.count >= state.target) {
+        sound.playCelebration();
+        triggerHaptic('success');
+        showToast('🔥 Mindestziel von 300 Gästen erreicht!');
+      }
+    }
+
+    function undoLast() {
+      if (state.history.length === 0) {
+        showToast('Keine Aktionen zum Rückgängig machen');
+        return;
+      }
+
+      const last = state.history.shift();
+      state.count = Math.max(0, state.count - last.delta);
+      saveState();
+      renderUI();
+      sound.playPop(300);
+      triggerHaptic('heavy');
+      setActionMessage(`Rückgängig: ${last.label} widerrufen`);
+      showToast(`Rückgängig: ${last.label}`);
+    }
+
+    document.getElementById('addOneBtn').addEventListener('click', () => {
+      applyDelta(1, '+1 Gast');
+    });
+
+    document.getElementById('addTenBtn').addEventListener('click', () => {
+      applyDelta(10, '+10 Gruppe');
+    });
+
+    document.getElementById('subOneBtn').addEventListener('click', () => {
+      applyDelta(-1, '-1 Korrektur');
+    });
+
+    document.getElementById('undoBtn').addEventListener('click', () => {
+      undoLast();
+    });
+
+    // Custom group submit
+    const customInput = document.getElementById('customGroupInput');
+    const addCustomGroupBtn = document.getElementById('addCustomGroupBtn');
+
+    function handleCustomAdd() {
+      const val = parseInt(customInput.value, 10);
+      if (isNaN(val) || val <= 0) {
+        showToast('Bitte eine gültige Personenzahl eingeben');
+        return;
+      }
+      applyDelta(val, `+${val} Gruppe`);
+      customInput.value = '';
+      customInput.blur();
+    }
+
+    addCustomGroupBtn.addEventListener('click', handleCustomAdd);
+    customInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleCustomAdd();
+    });
+
+    document.getElementById('sendMailBtn').addEventListener('click', () => {
+      const dateStr = new Date().toLocaleDateString('de-DE');
+      const timeStr = new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+      const target = state.target || 300;
+      const targetMet = state.count >= target ? 'JA' : 'NEIN';
+      const pct = Math.round((state.count / target) * 100);
+
+      const subject = encodeURIComponent(
+        `Einlassbericht [${state.stationName || 'Tür'}]: ${state.count} Gäste — The Point Of No Return (${dateStr})`
+      );
+
+      // Hourly breakdown calculation from log
+      const hourlySummary = {};
+      state.history.forEach(item => {
+        if (item.delta > 0) {
+          const hourKey = item.time.split(':')[0] + ':00';
+          hourlySummary[hourKey] = (hourlySummary[hourKey] || 0) + item.delta;
+        }
+      });
+
+      let breakdownText = '';
+      Object.keys(hourlySummary).forEach(hour => {
+        breakdownText += `  • ${hour} Uhr: +${hourlySummary[hour]} Personen\n`;
+      });
+
+      if (!breakdownText) breakdownText = '  (Noch keine stündlichen Daten vorhanden)\n';
+
+      const bodyText = 
+`==============================================
+EINLASS-BERICHT: THE POINT OF NO RETURN
+Location: Sonnenraum, Eichenstraße 4A, 12435 Berlin
+Datum/Uhrzeit: ${dateStr} um ${timeStr}
+Station / Zähler: ${state.stationName || 'Unbenannt'}
+==============================================
+
+GESAMTZAHL GÄSTE: ${state.count}
+Mindestziel (300): ${targetMet} (${pct}% erreicht)
+Eintrittspreis: 10 € at the door
+Theoretischer Kassenstand (Einlass): ~${state.count * 10} €
+
+STÜNDLICHE ÜBERSICHT:
+${breakdownText}
+----------------------------------------------
+Zuletzt erfasste Einträge:
+${state.history.slice(0, 8).map(h => `[${h.time}] ${h.label} -> Gesamt: ${h.resultingTotal}`).join('\n')}
+
+Generiert mit der Sonnenraum Einlass App.
+Persistiert im LocalStorage.`;
+
+      const body = encodeURIComponent(bodyText);
+      const recipient = encodeURIComponent(state.recipientEmail || '');
+      
+      // Open native Mail app via mailto link
+      window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
+      showToast('E-Mail-Entwurf wird geöffnet...');
+    });
+
+    const logModal = document.getElementById('logModal');
+    const logListContainer = document.getElementById('logListContainer');
+    const settingsModal = document.getElementById('settingsModal');
+
+    // Open/Close Log Modal
+    document.getElementById('viewLogBtn').addEventListener('click', () => {
+      renderLogList();
+      logModal.classList.remove('hidden');
+    });
+
+    function closeLog() {
+      logModal.classList.add('hidden');
+    }
+    document.getElementById('closeLogBtn').addEventListener('click', closeLog);
+    document.getElementById('closeLogModalBottomBtn').addEventListener('click', closeLog);
+
+    function renderLogList() {
+      logListContainer.innerHTML = '';
+      if (state.history.length === 0) {
+        logListContainer.innerHTML = '<div class="text-zinc-600 text-center py-6">Noch keine Zählungen vorgenommen</div>';
+        return;
+      }
+
+      state.history.forEach(item => {
+        const row = document.createElement('div');
+        row.className = "flex justify-between items-center bg-black/40 border border-zinc-800/80 px-3 py-2 rounded-xl";
+        const isPos = item.delta > 0;
+        row.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="${isPos ? 'text-emerald-400 bg-emerald-950/60 border border-emerald-800/50' : 'text-red-400 bg-red-950/60 border border-red-800/50'} text-[11px] font-bold px-2 py-0.5 rounded-md">
+              ${isPos ? '+' + item.delta : item.delta}
+            </span>
+            <span class="text-zinc-300 font-sans">${item.label}</span>
+          </div>
+          <div class="text-right">
+            <div class="text-white font-bold">${item.resultingTotal}</div>
+            <div class="text-[10px] text-zinc-500">${item.time}</div>
+          </div>
+        `;
+        logListContainer.appendChild(row);
+      });
+    }
+
+    // Open/Close Settings Modal
+    const stationInput = document.getElementById('stationInput');
+    const recipientEmailInput = document.getElementById('recipientEmailInput');
+    const targetInput = document.getElementById('targetInput');
+
+    function openSettings() {
+      stationInput.value = state.stationName || '';
+      recipientEmailInput.value = state.recipientEmail || '';
+      targetInput.value = state.target || 300;
+      settingsModal.classList.remove('hidden');
+    }
+
+    function closeSettings() {
+      settingsModal.classList.add('hidden');
+    }
+
+    document.getElementById('stationBadgeBtn').addEventListener('click', openSettings);
+    document.getElementById('optionsBtn').addEventListener('click', openSettings);
+    document.getElementById('closeSettingsBtn').addEventListener('click', closeSettings);
+
+    document.getElementById('saveSettingsBtn').addEventListener('click', () => {
+      state.stationName = stationInput.value.trim() || 'Tür 1';
+      state.recipientEmail = recipientEmailInput.value.trim();
+      state.target = parseInt(targetInput.value, 10) || 300;
+      saveState();
+      renderUI();
+      closeSettings();
+      showToast('Einstellungen gespeichert');
+    });
+
+    document.getElementById('resetCounterBtn').addEventListener('click', () => {
+      // Inline custom verification inside the modal
+      if (confirmResetVisible) {
+        state.count = 0;
+        state.history = [];
+        saveState();
+        renderUI();
+        closeSettings();
+        confirmResetVisible = false;
+        resetBtn.textContent = 'Zähler auf 0 Zurücksetzen';
+        showToast('Zähler wurde auf 0 zurückgesetzt');
+      } else {
+        confirmResetVisible = true;
+        resetBtn.textContent = 'Wirklich zurücksetzen? (Erneut tippen)';
+        setTimeout(() => {
+          confirmResetVisible = false;
+          resetBtn.textContent = 'Zähler auf 0 Zurücksetzen';
+        }, 4000);
+      }
+    });
+
+    let confirmResetVisible = false;
+    const resetBtn = document.getElementById('resetCounterBtn');
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        const swBlob = new Blob([`
+          const CACHE_NAME = 'sonnenraum-v1';
+          self.addEventListener('install', (e) => {
+            self.skipWaiting();
+          });
+          self.addEventListener('activate', (e) => {
+            e.waitUntil(clients.claim());
+          });
+          self.addEventListener('fetch', (e) => {
+            e.respondWith(
+              fetch(e.request).catch(() => caches.match(e.request))
+            );
+          });
+        `], { type: 'application/javascript' });
+
+        const swUrl = URL.createObjectURL(swBlob);
+        navigator.serviceWorker.register(swUrl).catch(() => {
+          // Fallback gracefully if blob workers are restricted
+        });
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderUI();
+    });
+  </script>
+</body>
+</html>

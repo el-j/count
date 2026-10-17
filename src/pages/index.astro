@@ -1,0 +1,43 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import CounterDisplay from '../components/CounterDisplay.astro';
+import CounterControls from '../components/CounterControls.astro';
+import Footer from '../components/Footer.astro';
+import LogModal from '../components/LogModal.astro';
+import SettingsModal from '../components/SettingsModal.astro';
+import Toast from '../components/Toast.astro';
+---
+
+<Layout>
+  <!-- Event & Venue Header with Station Tag -->
+  <Header initialStation="Tür 1" />
+
+  <!-- Main Interactive Counter Zone -->
+  <main class="w-full max-w-md mx-auto px-4 flex-1 flex flex-col justify-center my-2 sm:my-3">
+    <!-- Progress Header & Giant Counter -->
+    <CounterDisplay initialTarget={300} initialCount={0} />
+
+    <!-- Tactile Push Buttons & Group Form -->
+    <CounterControls />
+  </main>
+
+  <!-- Sticky Bottom Actions (Mail export, settings, status) -->
+  <Footer />
+
+  <!-- Modals & Feedback Overlays -->
+  <LogModal />
+  <SettingsModal />
+  <Toast />
+
+  <!-- Client-side Counter Hydration -->
+  <script>
+    import { setupCounterApp } from '../scripts/counter';
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => setupCounterApp());
+    } else {
+      setupCounterApp();
+    }
+  </script>
+</Layout>

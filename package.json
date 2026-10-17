@@ -1,0 +1,20 @@
+{
+  "name": "sonnenraum-counter",
+  "description": "Offline-first door counter app for The Point Of No Return @ Sonnenraum Berlin",
+  "type": "module",
+  "version": "1.0.0",
+  "engines": {
+    "node": ">=22.22.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.4.0",
+    "tailwindcss": "^4.3.3"
+  }
+}

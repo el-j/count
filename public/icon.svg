@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1f1418" />
+      <stop offset="100%" stop-color="#0b090a" />
+    </radialGradient>
+    <linearGradient id="glowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffb347" />
+      <stop offset="50%" stop-color="#ff4d15" />
+      <stop offset="100%" stop-color="#c93400" />
+    </linearGradient>
+    <filter id="neon" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="12" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Dark Club Background Tile -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" stroke="#2e2327" stroke-width="12" />
+
+  <!-- Outer Glow Ring -->
+  <circle cx="256" cy="256" r="180" stroke="url(#glowGrad)" stroke-width="8" opacity="0.4" stroke-dasharray="16 12" />
+
+  <!-- Center Counter Icon (+1 & Arch) -->
+  <g filter="url(#neon)">
+    <!-- Stylized Venue Arch / Doorway -->
+    <path d="M168 384 V240 C168 190 207 152 256 152 C305 152 344 190 344 240 V384" stroke="url(#glowGrad)" stroke-width="22" stroke-linecap="round" fill="none" />
+    <!-- Tally Counter Cross / Plus Sign -->
+    <path d="M256 220 V320" stroke="#f4ede2" stroke-width="20" stroke-linecap="round" />
+    <path d="M206 270 H306" stroke="#f4ede2" stroke-width="20" stroke-linecap="round" />
+  </g>
+
+  <!-- Minimal Brand Dot -->
+  <circle cx="256" cy="116" r="14" fill="#ff4d15" />
+</svg>

@@ -1,0 +1,45 @@
+---
+interface Props {
+  initialStation?: string;
+}
+
+const { initialStation = 'Tür 1' } = Astro.props;
+---
+
+<header class="w-full max-w-md mx-auto pt-4 sm:pt-6 px-4">
+  <div class="border-b border-brand-surfaceBorder/80 pb-3.5 flex items-start justify-between gap-2">
+    <div>
+      <div class="flex items-center gap-2">
+        <span class="inline-block w-1.5 h-1.5 rounded-full bg-brand-orange animate-ping"></span>
+        <p class="text-xs uppercase tracking-widest text-brand-amber font-mono font-semibold">
+          17.10. • 21:00 – 07:00
+        </p>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-display uppercase tracking-tight text-brand-cream poster-glow leading-none mt-1">
+        The Point Of <span class="text-brand-orange">No Return</span>
+      </h1>
+      <p class="text-[11px] font-medium tracking-wide text-zinc-400 mt-1 flex items-center gap-1">
+        <svg class="w-3 h-3 text-brand-orange shrink-0" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+        </svg>
+        <span>SONNENRAUM • Eichenstraße 4A, Berlin</span>
+      </p>
+    </div>
+
+    <!-- Quick Door Selector / Station Tag -->
+    <button
+      id="stationBadgeBtn"
+      type="button"
+      aria-label="Tür-Station auswählen oder bearbeiten"
+      class="tap-btn bg-brand-surface/90 border border-brand-surfaceBorder hover:border-brand-orange/60 text-zinc-300 text-xs py-1.5 px-3 rounded-xl flex items-center gap-1.5 shadow-md transition shrink-0"
+    >
+      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+      <span id="stationNameDisplay" class="font-mono text-[11px] font-semibold truncate max-w-[95px]">
+        {initialStation}
+      </span>
+      <svg class="w-3 h-3 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+      </svg>
+    </button>
+  </div>
+</header>

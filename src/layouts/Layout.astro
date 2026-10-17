@@ -1,0 +1,68 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'The Point Of No Return — Sonnenraum Counter',
+  description = 'Offline-fähiger Einlass-Zähler für The Point Of No Return @ Sonnenraum Berlin. Mindestziel 300 Gäste, multi-door fähig mit E-Mail-Export.'
+} = Astro.props;
+
+const baseUrl = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+---
+
+<!DOCTYPE html>
+<html lang="de" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    
+    <!-- iOS and PWA Fullscreen Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Door Counter" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#0b090a" />
+
+    <!-- SEO & Metadata -->
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Sonnenraum Berlin" />
+
+    <!-- Icons & Manifest -->
+    <link rel="icon" type="image/svg+xml" href={`${baseUrl}favicon.svg`} />
+    <link rel="apple-touch-icon" href={`${baseUrl}icon.svg`} />
+    <link rel="manifest" href={`${baseUrl}manifest.json`} />
+
+    <!-- Typography (Google Fonts Oswald, Inter, JetBrains Mono) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&family=Oswald:wght@600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="text-brand-cream min-h-screen flex flex-col justify-between selection:bg-brand-orange selection:text-white antialiased font-sans pb-4 sm:pb-6 overflow-x-hidden">
+    <slot />
+
+    <!-- Register Offline Service Worker -->
+    <script is:inline define:vars={{ baseUrl }}>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          const swUrl = `${baseUrl}sw.js`.replace(/\/{2,}/g, '/');
+          navigator.serviceWorker.register(swUrl).catch((err) => {
+            console.warn('SW registration fallback:', err);
+          });
+        });
+      }
+    </script>
+  </body>
+</html>
