@@ -2,20 +2,20 @@
 // Counter Controls Component
 ---
 
-<div class="space-y-2.5">
+<div class="space-y-2 sm:space-y-2.5 shrink-0">
   <!-- Primary Counter Buttons Row -->
-  <div class="grid grid-cols-3 gap-2.5">
+  <div class="grid grid-cols-3 gap-2 sm:gap-2.5">
     <!-- +1 Primary Button (Spans 2 columns) -->
     <button
       id="addOneBtn"
       type="button"
       aria-label="Einen Gast hinzufügen"
-      class="tap-btn col-span-2 bg-gradient-to-br from-brand-orange via-orange-600 to-brand-darkorange border border-orange-400/40 text-white rounded-2xl py-4 sm:py-5 px-4 shadow-xl shadow-brand-orange/25 flex flex-col items-center justify-center cursor-pointer select-none ring-1 ring-white/10"
+      class="tap-btn col-span-2 bg-gradient-to-br from-brand-orange via-orange-600 to-brand-darkorange border border-orange-400/40 text-white rounded-2xl py-3 xs:py-3.5 sm:py-5 px-4 shadow-xl shadow-brand-orange/25 flex flex-col items-center justify-center cursor-pointer select-none ring-1 ring-white/10"
     >
       <span class="text-3xl sm:text-4xl font-display tracking-wide font-black leading-none drop-shadow-md">
         + 1
       </span>
-      <span class="text-[11px] sm:text-xs uppercase tracking-wider font-semibold text-orange-100 mt-1 font-mono">
+      <span class="text-[10px] sm:text-xs uppercase tracking-wider font-semibold text-orange-100 mt-0.5 sm:mt-1 font-mono">
         Gast
       </span>
     </button>
@@ -25,21 +25,21 @@
       id="addTenBtn"
       type="button"
       aria-label="Zehn Gäste auf einmal hinzufügen"
-      class="tap-btn bg-brand-surface border border-brand-surfaceBorder hover:border-brand-amber/70 text-brand-amber active:bg-brand-amber active:text-black rounded-2xl py-4 sm:py-5 px-3 flex flex-col items-center justify-center cursor-pointer select-none shadow-lg transition"
+      class="tap-btn bg-brand-surface border border-brand-surfaceBorder hover:border-brand-amber/70 text-brand-amber active:bg-brand-amber active:text-black rounded-2xl py-3 xs:py-3.5 sm:py-5 px-3 flex flex-col items-center justify-center cursor-pointer select-none shadow-lg transition"
     >
       <span class="text-3xl sm:text-4xl font-display tracking-wide font-black leading-none">
         + 10
       </span>
-      <span class="text-[11px] sm:text-xs uppercase tracking-wider font-semibold text-zinc-400 mt-1 font-mono">
+      <span class="text-[10px] sm:text-xs uppercase tracking-wider font-semibold text-zinc-400 mt-0.5 sm:mt-1 font-mono">
         Gruppe
       </span>
     </button>
   </div>
 
   <!-- Custom Group Input & Minus Buttons Row -->
-  <div class="grid grid-cols-3 gap-2.5">
+  <div class="grid grid-cols-3 gap-2 sm:gap-2.5">
     <!-- Custom Number Input + Add Group -->
-    <div class="col-span-2 bg-brand-surface border border-brand-surfaceBorder rounded-2xl p-1.5 flex items-center shadow-inner focus-within:border-brand-orange/70 transition">
+    <div class="col-span-2 bg-brand-surface border border-brand-surfaceBorder rounded-2xl p-1 sm:p-1.5 flex items-center shadow-inner focus-within:border-brand-orange/70 transition">
       <input
         id="customGroupInput"
         type="number"
@@ -47,12 +47,12 @@
         max="150"
         placeholder="Gruppe (+N)"
         aria-label="Benutzerdefinierte Gruppengröße"
-        class="w-full bg-transparent text-white font-mono text-base sm:text-lg px-3 py-1.5 outline-none placeholder:text-zinc-600 focus:placeholder:text-transparent"
+        class="w-full bg-transparent text-white font-mono text-sm sm:text-base px-2.5 sm:px-3 py-1 sm:py-1.5 outline-none placeholder:text-zinc-600 focus:placeholder:text-transparent"
       />
       <button
         id="addCustomGroupBtn"
         type="button"
-        class="tap-btn bg-zinc-800 hover:bg-brand-orange text-white text-xs font-bold uppercase tracking-wider py-2.5 px-3.5 rounded-xl transition whitespace-nowrap cursor-pointer shadow-md font-mono"
+        class="tap-btn bg-zinc-800 hover:bg-brand-orange active:bg-brand-darkorange text-white text-[11px] sm:text-xs font-bold uppercase tracking-wider py-2 sm:py-2.5 px-3 sm:px-3.5 rounded-xl transition whitespace-nowrap cursor-pointer shadow-md font-mono"
       >
         + Hinzu
       </button>
@@ -63,23 +63,23 @@
       id="subOneBtn"
       type="button"
       aria-label="Einen Zähler korrigieren oder abziehen"
-      class="tap-btn bg-zinc-900/90 border border-zinc-800 hover:border-red-500/50 text-zinc-400 hover:text-red-400 active:bg-red-950 active:text-white rounded-2xl py-3 px-2 flex flex-col items-center justify-center cursor-pointer transition select-none shadow-md"
+      class="tap-btn bg-zinc-900/90 border border-zinc-800 hover:border-red-500/50 text-zinc-400 hover:text-red-400 active:bg-red-950 active:text-white rounded-2xl py-2 sm:py-3 px-2 flex flex-col items-center justify-center cursor-pointer transition select-none shadow-md"
     >
-      <span class="text-xl sm:text-2xl font-display font-bold leading-none">
+      <span class="text-lg sm:text-2xl font-display font-bold leading-none">
         - 1
       </span>
-      <span class="text-[10px] uppercase font-mono tracking-wider mt-0.5">
+      <span class="text-[9px] sm:text-[10px] uppercase font-mono tracking-wider mt-0.5">
         Korrektur
       </span>
     </button>
   </div>
 
   <!-- Undo and History Quick Links Row -->
-  <div class="flex items-center justify-between text-xs font-mono text-zinc-400 px-1 pt-1">
+  <div class="flex items-center justify-between text-[11px] sm:text-xs font-mono text-zinc-400 px-1 pt-0.5">
     <button
       id="undoBtn"
       type="button"
-      class="hover:text-white transition flex items-center gap-1.5 py-1 px-1.5 rounded-lg hover:bg-zinc-800/40 cursor-pointer"
+      class="hover:text-white transition flex items-center gap-1.5 py-1 px-1.5 rounded-lg hover:bg-zinc-800/40 cursor-pointer active:scale-95"
     >
       <svg class="w-3.5 h-3.5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
@@ -90,7 +90,7 @@
     <button
       id="viewLogBtn"
       type="button"
-      class="text-zinc-400 hover:text-brand-amber transition flex items-center gap-1.5 py-1 px-1.5 rounded-lg hover:bg-zinc-800/40 cursor-pointer"
+      class="text-zinc-400 hover:text-brand-amber transition flex items-center gap-1.5 py-1 px-1.5 rounded-lg hover:bg-zinc-800/40 cursor-pointer active:scale-95"
     >
       <svg class="w-3.5 h-3.5 text-brand-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />

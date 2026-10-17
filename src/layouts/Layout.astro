@@ -17,10 +17,13 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
 ---
 
 <!DOCTYPE html>
-<html lang="de" class="dark">
+<html lang="de" class="dark h-[100dvh] overflow-hidden overscroll-none select-none">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
     
     <!-- iOS and PWA Fullscreen Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -50,7 +53,10 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/')
       rel="stylesheet"
     />
   </head>
-  <body class="text-brand-cream min-h-screen flex flex-col justify-between selection:bg-brand-orange selection:text-white antialiased font-sans pb-4 sm:pb-6 overflow-x-hidden">
+  <body
+    class="text-brand-cream h-[100dvh] max-h-[100dvh] w-full flex flex-col justify-between selection:bg-brand-orange selection:text-white antialiased font-sans overflow-hidden select-none"
+    style="padding-top: max(0.5rem, env(safe-area-inset-top)); padding-bottom: max(0.5rem, env(safe-area-inset-bottom)); padding-left: max(0.75rem, env(safe-area-inset-left)); padding-right: max(0.75rem, env(safe-area-inset-right));"
+  >
     <slot />
 
     <!-- Register Offline Service Worker -->

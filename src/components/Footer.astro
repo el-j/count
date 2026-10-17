@@ -2,19 +2,19 @@
 // Footer Component
 ---
 
-<footer class="w-full max-w-md mx-auto px-4 mt-auto pt-3">
-  <div class="bg-brand-surface/80 border border-brand-surfaceBorder rounded-2xl p-2.5 sm:p-3 flex gap-2 shadow-2xl backdrop-blur-md">
+<footer class="w-full max-w-md mx-auto px-1 mt-auto pt-2 shrink-0">
+  <div class="bg-brand-surface/80 border border-brand-surfaceBorder rounded-2xl p-2 sm:p-2.5 flex gap-2 shadow-2xl backdrop-blur-md">
     <!-- Send Mail Button (Primary Export) -->
     <button
       id="sendMailBtn"
       type="button"
-      class="tap-btn flex-1 bg-white hover:bg-brand-cream active:bg-zinc-200 text-black font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 shadow-lg transition cursor-pointer select-none"
+      class="tap-btn flex-1 bg-white hover:bg-brand-cream active:bg-zinc-200 text-black font-bold py-2.5 xs:py-3 sm:py-3.5 px-3 rounded-xl flex items-center justify-center gap-2 shadow-lg transition cursor-pointer select-none"
     >
       <svg class="w-4 h-4 text-brand-darkorange shrink-0" fill="currentColor" viewBox="0 0 20 20">
         <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
         <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
       </svg>
-      <span class="text-xs uppercase tracking-wider font-display font-black">
+      <span class="text-xs uppercase tracking-wider font-display font-black truncate">
         Zahlen per E-Mail senden
       </span>
     </button>
@@ -24,9 +24,9 @@
       id="optionsBtn"
       type="button"
       aria-label="Einstellungen & Station öffnen"
-      class="tap-btn bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white p-3.5 rounded-xl flex items-center justify-center transition cursor-pointer shrink-0 border border-zinc-700/60"
+      class="tap-btn bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white p-2.5 xs:p-3 sm:p-3.5 rounded-xl flex items-center justify-center transition cursor-pointer shrink-0 border border-zinc-700/60"
     >
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
       </svg>
@@ -34,10 +34,10 @@
   </div>
 
   <!-- Offline & Safety Notice Info Bar -->
-  <div class="flex items-center justify-between text-[10px] text-zinc-500 font-mono mt-2 px-1">
+  <div class="flex items-center justify-between text-[10px] text-zinc-500 font-mono mt-1.5 sm:mt-2 px-1">
     <span class="flex items-center gap-1.5">
       <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-      Offline &amp; LocalStorage aktiv
+      Offline &amp; LocalStorage
     </span>
     <span class="text-zinc-400 font-semibold tracking-wider">
       10 € AT THE DOOR

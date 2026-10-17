@@ -13,8 +13,8 @@ import Toast from '../components/Toast.astro';
   <!-- Event & Venue Header with Station Tag -->
   <Header initialStation="Tür 1" />
 
-  <!-- Main Interactive Counter Zone -->
-  <main class="w-full max-w-md mx-auto px-4 flex-1 flex flex-col justify-center my-2 sm:my-3">
+  <!-- Main Interactive Counter Zone: strictly centered, min-h-0 prevents flex overflow -->
+  <main class="w-full max-w-md mx-auto px-1 flex-1 flex flex-col justify-center my-auto min-h-0 overflow-hidden">
     <!-- Progress Header & Giant Counter -->
     <CounterDisplay initialTarget={300} initialCount={0} />
 
@@ -22,7 +22,7 @@ import Toast from '../components/Toast.astro';
     <CounterControls />
   </main>
 
-  <!-- Sticky Bottom Actions (Mail export, settings, status) -->
+  <!-- Snug Bottom Actions (Mail export, settings, status) -->
   <Footer />
 
   <!-- Modals & Feedback Overlays -->
