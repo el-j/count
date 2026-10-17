@@ -1,4 +1,5 @@
 import type { CounterState, CounterEntry } from '../types/counter';
+import { buildCounterSyncPayload, enqueueCounterSync, COUNTER_STORAGE_KEY } from '../lib/counter-sync';
 
 /**
  * Offline Web Audio Synthesizer
@@ -74,7 +75,7 @@ function generateRandomDeviceId(): string {
   return result;
 }
 
-const STORAGE_KEY = 'sonnenraum_party_counter_v1';
+const STORAGE_KEY = COUNTER_STORAGE_KEY;
 
 const defaultState: CounterState = {
   count: 0,
@@ -97,7 +98,17 @@ export function setupCounterApp(): void {
         if (!parsed.deviceId) {
           parsed.deviceId = generateRandomDeviceId();
         }
-        return { ...defaultState, ...parsed };
+        const merged = { ...defaultState, ...parsed };
+        return {
+          ...merged,
+          count: Number.isFinite(merged.count) ? Math.max(0, merged.count) : 0,
+          target: Number.isFinite(merged.target) && merged.target > 0 ? merged.target : 300,
+          stationName: typeof merged.stationName === 'string' && merged.stationName.trim() ? merged.stationName.trim() : defaultState.stationName,
+          deviceId: typeof merged.deviceId === 'string' && merged.deviceId.trim() ? merged.deviceId.trim().toUpperCase() : generateRandomDeviceId(),
+          recipientEmail: typeof merged.recipientEmail === 'string' ? merged.recipientEmail.trim() : '',
+          history: Array.isArray(merged.history) ? merged.history.slice(0, 500) : [],
+          startTime: typeof merged.startTime === 'string' && merged.startTime ? merged.startTime : new Date().toISOString()
+        };
       }
     } catch (err) {
       console.error('Error loading stored counter state:', err);
@@ -113,6 +124,13 @@ export function setupCounterApp(): void {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch (err) {
       console.error('Failed to save to localStorage:', err);
+    }
+
+    try {
+      const payload = buildCounterSyncPayload(state, { source: 'manual' });
+      enqueueCounterSync(payload);
+    } catch (err) {
+      console.warn('Background sync queue could not be updated:', err);
     }
   }
 
