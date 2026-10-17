@@ -10,11 +10,15 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "lint": "oxlint",
     "astro": "astro"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.4.0",
     "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "oxlint": "^1.88.0"
   }
 }

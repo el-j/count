@@ -155,6 +155,14 @@ export function setupCounterApp(): void {
   const customGroupInput = document.getElementById('customGroupInput') as HTMLInputElement | null;
   const addCustomGroupBtn = document.getElementById('addCustomGroupBtn');
 
+  // PWA Install Elements
+  const installBanner = document.getElementById('installBanner');
+  const triggerInstallBtn = document.getElementById('triggerInstallBtn');
+  const laterInstallBtn = document.getElementById('laterInstallBtn');
+  const dismissInstallBtn = document.getElementById('dismissInstallBtn');
+  const iosInstallGuide = document.getElementById('iosInstallGuide');
+  const settingsInstallBtn = document.getElementById('settingsInstallBtn');
+
   let toastTimeout: ReturnType<typeof setTimeout> | null = null;
   let confirmResetVisible = false;
   let resetTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -522,6 +530,86 @@ Offline-First mit LocalStorage.`;
       }
     });
   });
+
+  // Proactive PWA Install Handling
+  interface BeforeInstallPromptEvent extends Event {
+    prompt(): Promise<void>;
+    userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+  }
+
+  let deferredInstallPrompt: BeforeInstallPromptEvent | null = null;
+
+  const isStandalone = typeof window !== 'undefined' && (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    (navigator as unknown as { standalone?: boolean }).standalone === true
+  );
+
+  const isIos = typeof navigator !== 'undefined' &&
+    /iPad|iPhone|iPod/.test(navigator.userAgent) &&
+    !(window as unknown as { MSStream?: unknown }).MSStream;
+
+  function showInstallOffer(): void {
+    if (isStandalone) return;
+    if (sessionStorage.getItem('pwa_install_dismissed') === 'true') return;
+
+    installBanner?.classList.remove('hidden');
+
+    if (isIos) {
+      iosInstallGuide?.classList.remove('hidden');
+      triggerInstallBtn?.classList.add('hidden');
+    } else {
+      triggerInstallBtn?.classList.remove('hidden');
+      iosInstallGuide?.classList.add('hidden');
+    }
+  }
+
+  function dismissInstall(): void {
+    installBanner?.classList.add('hidden');
+    sessionStorage.setItem('pwa_install_dismissed', 'true');
+  }
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e as BeforeInstallPromptEvent;
+    showInstallOffer();
+  });
+
+  // Offer installation proactively when page is opened
+  setTimeout(() => {
+    showInstallOffer();
+  }, 500);
+
+  triggerInstallBtn?.addEventListener('click', async () => {
+    if (deferredInstallPrompt) {
+      await deferredInstallPrompt.prompt();
+      const choice = await deferredInstallPrompt.userChoice;
+      if (choice.outcome === 'accepted') {
+        showToast('App wird installiert...');
+      }
+      deferredInstallPrompt = null;
+      dismissInstall();
+    } else {
+      showToast('Im Browser-Menü auf "Installieren" tippen');
+    }
+  });
+
+  settingsInstallBtn?.addEventListener('click', async () => {
+    if (deferredInstallPrompt) {
+      await deferredInstallPrompt.prompt();
+      const choice = await deferredInstallPrompt.userChoice;
+      if (choice.outcome === 'accepted') {
+        showToast('App wird installiert...');
+      }
+      deferredInstallPrompt = null;
+    } else if (isIos) {
+      showToast('iOS: Teilen (⎋) -> "Zum Home-Bildschirm" (+)');
+    } else {
+      showToast('Im Browser-Menü "Zum Startbildschirm" wählen');
+    }
+  });
+
+  laterInstallBtn?.addEventListener('click', dismissInstall);
+  dismissInstallBtn?.addEventListener('click', dismissInstall);
 
   // Initial render
   renderUI();

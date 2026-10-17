@@ -7,9 +7,12 @@ import Footer from '../components/Footer.astro';
 import LogModal from '../components/LogModal.astro';
 import SettingsModal from '../components/SettingsModal.astro';
 import Toast from '../components/Toast.astro';
+import InstallBanner from '../components/InstallBanner.astro';
 ---
 
 <Layout>
+  <!-- Proactive PWA Installation Offer -->
+  <InstallBanner />
   <!-- Event & Venue Header with Station Tag -->
   <Header initialStation="Tür 1" />
 

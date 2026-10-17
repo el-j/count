@@ -2,13 +2,19 @@
 
 > Offline-fähige Einlass-Zähler Web-App für das Event **"The Point Of No Return"** im **Sonnenraum** (Eichenstraße 4A, 12435 Berlin).
 
-Built with **[Astro](https://astro.build)** & **Tailwind CSS**, designed for mobile-first operation by door staff in low-light and low-connectivity environments.
+Built with **[Astro](https://astro.build)**, **Tailwind CSS**, and **[Oxc](https://oxc.rs)**, designed for mobile-first operation by door staff in low-light and low-connectivity environments.
 
 ---
 
 ## ✨ Features
 
 - **Flyer-Aligned Club Aesthetic:** Glowing crimson, warm amber, and deep stage darks matching the event flyer typography and vibe.
+- **Zero-Scroll Mobile Layout:** Strictly constrained to `100dvh` with hardware safe-area insets (`env(safe-area-inset-*)`), preventing accidental scrolling or elastic bouncing on iOS & Android.
+- **Proactive PWA Installation Offer:**
+  - Automatically offers to install to Home Screen when the page is opened.
+  - Native `beforeinstallprompt` on Android Chrome & Desktop.
+  - Guided Share Sheet tooltip on iOS Safari (`Teilen ⎋ -> Zum Home-Bildschirm`).
+  - Persistent fallback shortcut in Settings Modal.
 - **100% Offline-First:**
   - Service Worker (`sw.js`) pre-caches assets for zero-reception basement entry operations.
   - Web Storage API (`localStorage`) guarantees persistent tallies across device locks and reloads.
@@ -24,14 +30,28 @@ Built with **[Astro](https://astro.build)** & **Tailwind CSS**, designed for mob
 - **Target Progress & Goal Celebration:**
   - Real-time progress bar toward the 300-guest minimum target.
   - Dynamic status indicator & celebratory pulse animation upon reaching or exceeding the goal.
-- **Multi-Door Station Identifier:**
-  - Station name toggle (e.g. `Tür 1`, `Tür 2`, or staff name) for multi-entrance venues.
+- **Multi-Door Station & Sender ID Tracking ("Woher gesendet"):**
+  - Station name toggle (e.g. `Tür 1`, `Tür 2`, or staff name).
+  - Unique persistent Device / Sender ID (e.g. `DEV-4A8F`), customizable and regenerable in Settings, embedded into all email subjects and shared reports.
+- **Native iOS & Android Share Menu (`navigator.share`):**
+  - Instant sharing via native OS share sheet (WhatsApp, Telegram, Signal, Mail, AirDrop, Messages).
+- **Direct Mailto Link:**
+  - Dedicated mail button and customizable `mailto:` recipient in Settings Modal.
 - **Audit & History Log:**
   - Timestamped chronological ledger of all admissions and adjustments.
-- **Automated Mail Export (`mailto:`):**
-  - Instant one-tap report generation with door ID, timestamps, total count, target milestone %, estimated door intake (10 € ticket price), and hourly admission breakdown.
-- **Settings Modal:**
-  - Adjust door name, default recipient email, target count (default: 300), and protected two-step zero reset.
+
+---
+
+## 🛠 Code Quality & Linting (oxc)
+
+The repository uses **[oxlint](https://oxc.rs/docs/guide/usage/linter)** (the Rust-based Oxidation Compiler suite) for lightning-fast linting and code quality validation:
+
+```bash
+# Run oxlint across the entire codebase
+npm run lint
+```
+
+`oxlint` is integrated directly into the CI/CD pipeline, guaranteeing zero warnings and high code standards prior to deployment.
 
 ---
 
@@ -49,10 +69,13 @@ npm run dev
 
 Visit `http://localhost:4321/count/` in your browser.
 
-### Building for Production
+### Building & Verification
 
 ```bash
-# Build static files into dist/
+# Check code quality with oxlint
+npm run lint
+
+# Build static production bundle into dist/
 npm run build
 
 # Preview production build locally
@@ -65,15 +88,10 @@ npm run preview
 
 The repository is configured with an automated GitHub Actions workflow in [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml).
 
-### Setup in GitHub:
-1. Push your commits to `main`:
-   ```bash
-   git add .
-   git commit -m "feat: complete Sonnenraum door counter app with Astro"
-   git push origin main
-   ```
-2. In your GitHub repository settings:
-   - Navigate to **Settings** > **Pages**.
-   - Under **Build and deployment** > **Source**, select **GitHub Actions**.
-3. Every push to `main` will automatically build the Astro app and deploy it to:
-   **`https://el-j.github.io/count/`**
+### Automated Pipeline:
+1. Every push to `main` executes:
+   - Dependency installation (`npm ci`)
+   - Rust linter check (`npm run lint` with `oxlint`)
+   - Static Astro compilation (`npm run build`)
+   - Automatic deployment to GitHub Pages via `actions/deploy-pages@v4`
+2. App URL: **`https://el-j.github.io/count/`**
